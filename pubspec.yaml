@@ -8,6 +8,7 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
+  fl_chart: ^0.64.0
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
@@ -40,5 +41,13 @@ flutter:
     - images/koyu_rectangle.png
     - images/uzun_rectangle.png
     - images/yesil_rectangle.png
+    - images/adim.png
+    - images/ayak.png
+    - images/kalp.png
+    - images/oksijen.png
+    - images/person.png
+    - images/stres.png
+    - images/tansiyon.png
+    - images/termostat.png
 
 
