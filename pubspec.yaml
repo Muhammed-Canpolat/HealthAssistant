@@ -1,0 +1,44 @@
+name: kronik_hasta_takip
+description: "Kronik hastaların takibi için mobil uygulama"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - images/adsiz_tasarim_14.png
+    - images/eye_icon.png
+    - images/frame_56.png
+    - images/frame_59.png
+    - images/frame_60.png
+    - images/frame_63.png
+    - images/frame_64.png
+    - images/frame_65.png
+    - images/frame_66.png
+    - images/frame_67.png
+    - images/frame_68.png
+    - images/frame_69.png
+    - images/frame_82.png
+    - images/frame_83.png
+    - images/frame_84.png
+    - images/frame_106.png
+    - images/frame_107.png
+    - images/koyu_rectangle.png
+    - images/uzun_rectangle.png
+    - images/yesil_rectangle.png
+
+
