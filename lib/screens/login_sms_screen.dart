@@ -1,7 +1,41 @@
 import 'package:flutter/material.dart';
 
-class LoginSmsScreen extends StatelessWidget {
+class LoginSmsScreen extends StatefulWidget {
   const LoginSmsScreen({super.key});
+
+  @override
+  State<LoginSmsScreen> createState() => _LoginSmsScreenState();
+}
+
+class _LoginSmsScreenState extends State<LoginSmsScreen> {
+  final List<TextEditingController> _controllers = List.generate(
+    4,
+    (_) => TextEditingController(),
+  );
+  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handleInput(String value, int index) {
+    if (value.isNotEmpty && index < 3) {
+      _focusNodes[index + 1].requestFocus();
+    }
+  }
+
+  void _handleBackspace(String value, int index) {
+    if (value.isEmpty && index > 0) {
+      _focusNodes[index - 1].requestFocus();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +105,8 @@ class LoginSmsScreen extends StatelessWidget {
                             ),
                             child: Center(
                               child: TextField(
+                                controller: _controllers[index],
+                                focusNode: _focusNodes[index],
                                 textAlign: TextAlign.center,
                                 keyboardType: TextInputType.number,
                                 maxLength: 1,
@@ -83,6 +119,20 @@ class LoginSmsScreen extends StatelessWidget {
                                   counterText: '',
                                   border: InputBorder.none,
                                 ),
+                                onChanged: (value) {
+                                  _handleInput(value, index);
+                                },
+                                onSubmitted: (_) {
+                                  if (index == 3) {
+                                    // Giriş tamamlandı
+                                  }
+                                },
+                                onEditingComplete: () {
+                                  _handleBackspace(
+                                    _controllers[index].text,
+                                    index,
+                                  );
+                                },
                               ),
                             ),
                           );
