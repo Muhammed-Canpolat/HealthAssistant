@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kronik_hasta_takip/line_chart_sample.dart';
+import 'package:kronik_hasta_takip/screens/line_chart_sample.dart';
 
 class TrianglePainter extends CustomPainter {
   final Color color;
@@ -342,16 +342,12 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-
-                  // Dikey ayırıcı çizgi
                   Container(
                     height: 80,
                     width: 1.5,
                     color: Colors.grey,
                     margin: EdgeInsets.symmetric(horizontal: 16),
                   ),
-
-                  // Küçük Tansiyon
                   Column(
                     children: [
                       Text(
