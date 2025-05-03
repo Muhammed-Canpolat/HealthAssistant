@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kronik_hasta_takip/screens/register_home_page.dart';
 import 'screens/login_email_screen.dart';
 import 'screens/login_phone_screen.dart';
 import 'screens/login_sms_screen.dart';
@@ -11,6 +10,11 @@ import 'screens/forgot_password_reset_screen.dart';
 import 'screens/home_page.dart';
 import 'screens/settings.dart';
 import 'screens/emergency.dart';
+import 'screens/patients_home_page.dart';
+import 'screens/patients_settings.dart';
+import 'screens/patients_profile.dart';
+import 'screens/patients_security.dart';
+import 'screens/patients_help.dart';
 
 void main() {
   runApp(const KronikHastaTakipApp());
@@ -38,7 +42,13 @@ class KronikHastaTakipApp extends StatelessWidget {
         '/forgotPassword': (context) => const ForgotPasswordScreen(),
         '/forgotVerify': (context) => ForgotVerifyScreen(),
         '/resetPassword': (context) => const ForgotResetScreen(),
-        '/home': (context) => PatientHomePage(), //AltNavigasyon(),
+        '/home': (context) => AltNavigasyon(),
+        '/patientHome': (context) => PatientHomePage(),
+        '/patientsSettings': (context) => PatientsSettings(),
+        '/patientsProfile': (context) => PatientsProfile(),
+        '/patientsSecurity': (context) => const PatientsSecurity(),
+        '/patientsHelp': (context) => const PatientsHelp(),
+        '/registerHome': (context) => PatientHomePage(),
       },
     );
   }

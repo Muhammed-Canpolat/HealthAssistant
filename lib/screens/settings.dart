@@ -24,56 +24,65 @@ class Settings extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildSettingsTile(
-              context,
-              title: "Profil",
-              icon: Icons.person_outline,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
-                  ),
-              fontSize: titleFontSize,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('images/arka_plan.png', fit: BoxFit.cover),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildSettingsTile(
+                  context,
+                  title: "Profil",
+                  icon: Icons.person_outline,
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      ),
+                  fontSize: titleFontSize,
+                ),
+                _buildSettingsTile(
+                  context,
+                  title: "Güvenlik",
+                  icon: Icons.lock_outline,
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SecurityPage()),
+                      ),
+                  fontSize: titleFontSize,
+                ),
+                _buildSettingsTile(
+                  context,
+                  title: "Cihaz Bağlantısı",
+                  icon: Icons.devices_other,
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DeviceConnection(),
+                        ),
+                      ),
+                  fontSize: titleFontSize,
+                ),
+                _buildSettingsTile(
+                  context,
+                  title: "Yardım",
+                  icon: Icons.help_outline,
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HelpPage()),
+                      ),
+                  fontSize: titleFontSize,
+                ),
+              ],
             ),
-            _buildSettingsTile(
-              context,
-              title: "Güvenlik",
-              icon: Icons.lock_outline,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SecurityPage()),
-                  ),
-              fontSize: titleFontSize,
-            ),
-            _buildSettingsTile(
-              context,
-              title: "Cihaz Bağlantısı",
-              icon: Icons.devices_other,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => DeviceConnection()),
-                  ),
-              fontSize: titleFontSize,
-            ),
-            _buildSettingsTile(
-              context,
-              title: "Yardım",
-              icon: Icons.help_outline,
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HelpPage()),
-                  ),
-              fontSize: titleFontSize,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

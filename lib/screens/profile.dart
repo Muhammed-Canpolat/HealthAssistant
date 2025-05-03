@@ -21,6 +21,9 @@ class _ProfilePageState extends State<ProfilePage> {
     text: "Tansiyon\nDiyabet",
   );
 
+  List<String> allDiseases = ['Tansiyon', 'Diyabet', 'Astım', 'Kalp'];
+  Set<String> selectedDiseases = {'Tansiyon', 'Diyabet'};
+
   FocusNode nameFocus = FocusNode();
   FocusNode phoneFocus = FocusNode();
   FocusNode emailFocus = FocusNode();
@@ -42,6 +45,57 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void showDiseaseSelectionPanel() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Hastalık Seçimi',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ...allDiseases.map((disease) {
+                    return CheckboxListTile(
+                      title: Text(disease),
+                      value: selectedDiseases.contains(disease),
+                      onChanged: (bool? value) {
+                        setModalState(() {
+                          if (value == true) {
+                            selectedDiseases.add(disease);
+                          } else {
+                            selectedDiseases.remove(disease);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      diseaseController.text = selectedDiseases.join('\n');
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Kaydet"),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,21 +110,32 @@ class _ProfilePageState extends State<ProfilePage> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       backgroundColor: const Color(0xFFEAF4F4),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _buildEditableTile("Ad-Soyad", nameController, nameFocus),
-            _buildEditableTile("Telefon Numarası", phoneController, phoneFocus),
-            _buildEditableTile("Email", emailController, emailFocus),
-            _buildEditableTile(
-              "Kayıtlı Hastalıklar",
-              diseaseController,
-              diseaseFocus,
-              maxLines: 2,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset('images/arka_plan.png', fit: BoxFit.cover),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildEditableTile("Ad-Soyad", nameController, nameFocus),
+                _buildEditableTile(
+                  "Telefon Numarası",
+                  phoneController,
+                  phoneFocus,
+                ),
+                _buildEditableTile("Email", emailController, emailFocus),
+                _buildEditableTile(
+                  "Kayıtlı Hastalıklar",
+                  diseaseController,
+                  diseaseFocus,
+                  maxLines: 2,
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -100,13 +165,16 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 TextField(
                   controller: controller,
                   focusNode: focusNode,
-                  enabled: isEditing,
+                  enabled: isEditing && label != "Kayıtlı Hastalıklar",
                   maxLines: maxLines,
                   decoration: const InputDecoration.collapsed(hintText: ""),
                   style: const TextStyle(
@@ -119,7 +187,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           GestureDetector(
-            onTap: () => enableEditing(focusNode),
+            onTap: () {
+              if (label == "Kayıtlı Hastalıklar") {
+                showDiseaseSelectionPanel();
+              } else {
+                enableEditing(focusNode);
+              }
+            },
             child: Icon(Icons.edit, size: 20, color: Colors.grey[700]),
           ),
         ],

@@ -3,9 +3,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Emergency extends StatelessWidget {
   final List<Map<String, String>> contacts = [
-    {'name': 'Seda Sayan', 'phone': '05*********'},
-    {'name': 'Selena', 'phone': '05*********'},
-    {'name': 'Bülent Ersoy', 'phone': '05*********'},
+    {'name': 'Helin Özalkan', 'phone': '05*********'},
+    {'name': 'Zemzem Ertekin', 'phone': '05*********'},
+    {'name': 'Bedirhan Akarçeşme', 'phone': '05*********'},
   ];
 
   @override

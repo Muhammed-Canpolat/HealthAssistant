@@ -21,6 +21,7 @@ dev_dependencies:
   google_maps_flutter: ^2.5.0
   geolocator: ^10.1.0
   permission_handler: ^11.3.0
+  smooth_page_indicator: ^1.1.0
 
 flutter:
   uses-material-design: true
@@ -48,12 +49,13 @@ flutter:
     - images/adim.png
     - images/ayak.png
     - images/kalp.png
-    - images/oksijen.png
     - images/person.png
-    - images/stres.png
     - images/tansiyon.png
-    - images/termostat.png
     - images/arka_plan.png
+    - images/kan.png
+    - images/stressed.png
+    - images/sicaklik.png
+    - images/ana_sayfa_arkaplan.png
 
 
 
