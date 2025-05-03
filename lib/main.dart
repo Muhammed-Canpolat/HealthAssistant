@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kronik_hasta_takip/screens/register_home_page.dart';
 import 'screens/login_email_screen.dart';
 import 'screens/login_phone_screen.dart';
 import 'screens/login_sms_screen.dart';
-import 'screens/register_patient_screen.dart';
+import 'screens/register_patient_security_screen.dart';
 import 'screens/register_relative_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_verify_screen.dart';
@@ -35,9 +36,9 @@ class KronikHastaTakipApp extends StatelessWidget {
         '/registerPatient': (context) => const RegisterPatientScreen(),
         '/registerRelative': (context) => const RegisterRelativeScreen(),
         '/forgotPassword': (context) => const ForgotPasswordScreen(),
-        '/forgotVerify': (context) => const ForgotVerifyScreen(),
+        '/forgotVerify': (context) => ForgotVerifyScreen(),
         '/resetPassword': (context) => const ForgotResetScreen(),
-        '/home': (context) => AltNavigasyon(),
+        '/home': (context) => PatientHomePage(), //AltNavigasyon(),
       },
     );
   }

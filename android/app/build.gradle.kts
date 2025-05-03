@@ -28,6 +28,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        applicationId = "com.example.kronik_hasta_takip"
+
     }
 
     buildTypes {

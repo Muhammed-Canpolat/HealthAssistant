@@ -30,60 +30,75 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Şifre Yenile"), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildPasswordField(
-                label: "Eski Şifre",
-                controller: _oldPasswordController,
-                obscure: _obscureOld,
-                toggle: () => _toggleVisibility('old'),
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordField(
-                label: "Yeni Şifre",
-                controller: _newPasswordController,
-                obscure: _obscureNew,
-                toggle: () => _toggleVisibility('new'),
-              ),
-              const SizedBox(height: 20),
-              _buildPasswordField(
-                label: "Yeni Şifre (Tekrar)",
-                controller: _confirmPasswordController,
-                obscure: _obscureConfirm,
-                toggle: () => _toggleVisibility('confirm'),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Şifre güncellendi.")),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white, // Yazı rengi
-                  backgroundColor: Color(0xFF305058), // Buton arka planı
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 14,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text("Şifre Yenile"),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/arka_plan.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                const SizedBox(height: 80), // Added padding for AppBar
+                _buildPasswordField(
+                  label: "Eski Şifre",
+                  controller: _oldPasswordController,
+                  obscure: _obscureOld,
+                  toggle: () => _toggleVisibility('old'),
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  label: "Yeni Şifre",
+                  controller: _newPasswordController,
+                  obscure: _obscureNew,
+                  toggle: () => _toggleVisibility('new'),
+                ),
+                const SizedBox(height: 20),
+                _buildPasswordField(
+                  label: "Yeni Şifre (Tekrar)",
+                  controller: _confirmPasswordController,
+                  obscure: _obscureConfirm,
+                  toggle: () => _toggleVisibility('confirm'),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Şifre güncellendi.")),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white, // Yazı rengi
+                    backgroundColor: Color(0xFF305058), // Buton arka planı
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 14,
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                  child: const Text(
+                    "Şifreyi Güncelle",
+                    style: TextStyle(fontSize: 22),
                   ),
                 ),
-                child: const Text(
-                  "Şifreyi Güncelle",
-                  style: TextStyle(fontSize: 22),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -101,6 +116,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       obscureText: obscure,
       decoration: InputDecoration(
         labelText: label,
+        fillColor: Colors.white,
+        filled: true,
         border: const OutlineInputBorder(),
         suffixIcon: IconButton(
           icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
