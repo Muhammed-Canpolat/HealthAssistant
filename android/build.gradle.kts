@@ -1,3 +1,22 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services") 
+}
+pluginManagement {
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+    plugins {
+        id("com.android.application") version "8.3.0"
+        id("org.jetbrains.kotlin.android") version "1.9.22"
+        id("com.google.gms.google-services") version "4.4.0"
+    }
+}
+
+
 allprojects {
     repositories {
         google()
