@@ -8,25 +8,27 @@ environment:
   sdk: ^3.7.0
 
 dependencies:
-  fl_chart: ^0.64.0
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
   url_launcher: ^6.1.12
   firebase_core: ^2.25.4
   firebase_auth: ^4.10.0
+  fl_chart: ^0.64.0
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  permission_handler: ^11.3.0
+  smooth_page_indicator: ^1.1.0
+  multi_select_flutter: 4.1.3   # 👈 EKLENDİ
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
-  google_maps_flutter: ^2.5.0
-  geolocator: ^10.1.0
-  permission_handler: ^11.3.0
-  smooth_page_indicator: ^1.1.0
 
 flutter:
   uses-material-design: true
+
   assets:
     - images/adsiz_tasarim_14.png
     - images/eye_icon.png
@@ -58,6 +60,3 @@ flutter:
     - images/stressed.png
     - images/sicaklik.png
     - images/ana_sayfa_arkaplan.png
-
-
-

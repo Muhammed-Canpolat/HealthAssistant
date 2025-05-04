@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
-class RegisterPatientScreen extends StatefulWidget {
-  const RegisterPatientScreen({super.key});
+class RegisterPatientSecurityScreen extends StatefulWidget {
+  const RegisterPatientSecurityScreen({super.key});
 
   @override
-  State<RegisterPatientScreen> createState() => _RegisterPatientScreenState();
+  State<RegisterPatientSecurityScreen> createState() =>
+      _RegisterPatientSecurityScreenState();
 }
 
-class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
+class _RegisterPatientSecurityScreenState
+    extends State<RegisterPatientSecurityScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController surnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -18,9 +21,19 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
   final TextEditingController weightController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
 
-  String? selectedDisease;
   String? selectedBloodType;
   String? selectedGender;
+  List<String> selectedDiseases = [];
+
+  final List<String> diseaseList = [
+    "KOAH",
+    "Panik Atak",
+    "Uyku apnesi ve Uyku Bozuklukları",
+    "Diyabet",
+    "Tansiyon",
+    "Kalp",
+    "Astım",
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +135,11 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
                 obscureText: true,
               ),
               const SizedBox(height: 16),
+
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Hastalıklarınızı Ekleyiniz',
+                  'Hastalıklarınızı Seçiniz',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -134,29 +148,19 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: selectedDisease,
-                items:
-                    ["Şeker", "Tansiyon", "Kalp", "Astım"].map((disease) {
-                      return DropdownMenuItem(
-                        value: disease,
-                        child: Text(
-                          disease,
-                          style: const TextStyle(
-                            fontFamily: 'Arial',
-                            fontSize: 14,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                onChanged: (value) => setState(() => selectedDisease = value),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
+              MultiSelectDialogField(
+                items: diseaseList.map((e) => MultiSelectItem(e, e)).toList(),
+                title: const Text("Hastalıklar"),
+                buttonText: const Text("Hastalık Seç"),
+                onConfirm: (values) {
+                  setState(() {
+                    selectedDiseases = values.cast<String>();
+                  });
+                },
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
               ),
               const SizedBox(height: 16),
@@ -252,7 +256,9 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
               ),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  // form gönderme işlemi burada yapılabilir
+                },
                 child: Image.asset('images/frame_60.png', width: 120),
               ),
             ],

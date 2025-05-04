@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+// Ekranlar
 import 'screens/login_email_screen.dart';
 import 'screens/login_phone_screen.dart';
 import 'screens/login_sms_screen.dart';
-import 'screens/register_patient_security_screen.dart';
+import 'screens/register_patient_security_screen.dart'; // Doğru dosya adı ve class
 import 'screens/register_relative_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_verify_screen.dart';
@@ -15,8 +19,6 @@ import 'screens/patients_settings.dart';
 import 'screens/patients_profile.dart';
 import 'screens/patients_security.dart';
 import 'screens/patients_help.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +43,8 @@ class KronikHastaTakipApp extends StatelessWidget {
         '/loginEmail': (context) => const LoginEmailScreen(),
         '/loginPhone': (context) => const LoginPhoneScreen(),
         '/loginSms': (context) => const LoginSmsScreen(),
-        '/registerPatient': (context) => const RegisterPatientScreen(),
+        '/registerPatient':
+            (context) => const RegisterPatientSecurityScreen(), // Güncellendi
         '/registerRelative': (context) => const RegisterRelativeScreen(),
         '/forgotPassword': (context) => const ForgotPasswordScreen(),
         '/forgotVerify': (context) => ForgotVerifyScreen(),
@@ -72,14 +75,13 @@ class _AltNavigasyonState extends State<AltNavigasyon> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _sayfalar[_seciliIndex],
-
       floatingActionButton: SizedBox(
         width: 80,
         height: 80,
         child: FloatingActionButton(
           backgroundColor: Colors.red,
-          shape: CircleBorder(),
-          child: Text(
+          shape: const CircleBorder(),
+          child: const Text(
             "ACİL",
             style: TextStyle(
               fontWeight: FontWeight.w900,
@@ -95,13 +97,12 @@ class _AltNavigasyonState extends State<AltNavigasyon> {
           },
         ),
       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         color: const Color(0xFF18202B),
         shape: const CircularNotchedRectangle(),
         notchMargin: 6,
-        child: Container(
+        child: SizedBox(
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
