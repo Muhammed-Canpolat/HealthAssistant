@@ -6,7 +6,7 @@ import 'firebase_options.dart';
 import 'screens/login_email_screen.dart';
 import 'screens/login_phone_screen.dart';
 import 'screens/login_sms_screen.dart';
-import 'screens/register_patient_security_screen.dart'; // Doğru dosya adı ve class
+import 'screens/register_patient_screen.dart'; // Doğru dosya adı ve class
 import 'screens/register_relative_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_verify_screen.dart';

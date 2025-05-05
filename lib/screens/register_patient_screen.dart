@@ -26,13 +26,13 @@ class _RegisterPatientSecurityScreenState
   List<String> selectedDiseases = [];
 
   final List<String> diseaseList = [
-    "KOAH",
-    "Panik Atak",
-    "Uyku apnesi ve Uyku Bozuklukları",
     "Diyabet",
     "Tansiyon",
     "Kalp",
     "Astım",
+    "KOAH",
+    "Panik Atak",
+    "Uyku apnesi ve Uyku Bozuklukları",
   ];
 
   @override
