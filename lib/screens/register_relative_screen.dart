@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterRelativeScreen extends StatefulWidget {
   const RegisterRelativeScreen({super.key});
@@ -26,9 +28,7 @@ class _RegisterRelativeScreenState extends State<RegisterRelativeScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SafeArea(
@@ -64,12 +64,11 @@ class _RegisterRelativeScreenState extends State<RegisterRelativeScreen> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/registerPatient');
-                          },
-                          style: TextButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                          ),
+                          onPressed:
+                              () => Navigator.pushNamed(
+                                context,
+                                '/registerPatient',
+                              ),
                           child: const Text(
                             'Hasta',
                             style: TextStyle(color: Colors.black87),
@@ -115,7 +114,7 @@ class _RegisterRelativeScreenState extends State<RegisterRelativeScreen> {
                 ),
                 const SizedBox(height: 20),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: _registerRelative,
                   child: Image.asset('images/frame_60.png', width: 120),
                 ),
               ],
@@ -136,18 +135,8 @@ class _RegisterRelativeScreenState extends State<RegisterRelativeScreen> {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
-        style: const TextStyle(
-          fontFamily: 'Arial',
-          fontSize: 14,
-          color: Colors.black,
-        ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(
-            color: Colors.black,
-            fontFamily: 'Arial',
-            fontSize: 14,
-          ),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
@@ -157,5 +146,76 @@ class _RegisterRelativeScreenState extends State<RegisterRelativeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _registerRelative() async {
+    final name = nameController.text.trim();
+    final surname = surnameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    final patientCode = patientCodeController.text.trim();
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Şifreler eşleşmiyor.")));
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Şifre en az 6 karakter olmalı.")),
+      );
+      return;
+    }
+
+    try {
+      final patientQuery =
+          await FirebaseFirestore.instance
+              .collection('patients') // ✅ Hasta kayıtları burada aranmalı
+              .where('patientCode', isEqualTo: patientCode)
+              .limit(1)
+              .get();
+
+      if (patientQuery.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Geçersiz hasta bağlantı kodu.")),
+        );
+        return;
+      }
+
+      final patientDoc = patientQuery.docs.first;
+      final patientId = patientDoc.id;
+
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final relativeUid = userCredential.user!.uid;
+
+      await FirebaseFirestore.instance
+          .collection('relatives')
+          .doc(relativeUid)
+          .set({
+            'uid': relativeUid,
+            'name': name,
+            'surname': surname,
+            'email': email,
+            'phone': phone,
+            'linkedPatient': patientId,
+            'role': 'relative',
+            'createdAt': Timestamp.now(),
+          });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Kayıt başarıyla tamamlandı.")),
+      );
+
+      Navigator.pushReplacementNamed(context, '/loginEmail');
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Hata oluştu: ${e.toString()}")));
+    }
   }
 }

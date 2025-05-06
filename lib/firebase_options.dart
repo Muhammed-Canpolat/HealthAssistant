@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'healthassistant-2e690.firebasestorage.app',
     measurementId: 'G-9M4VVCH1FS',
   );
+
 }

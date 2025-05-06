@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PatientsProfile extends StatefulWidget {
   @override
@@ -7,20 +9,45 @@ class PatientsProfile extends StatefulWidget {
 
 class _PatientsProfileState extends State<PatientsProfile> {
   bool isEditing = false;
+  bool isLoading = true;
 
-  final TextEditingController nameController = TextEditingController(
-    text: "Sudenaz Kartal",
-  );
-  final TextEditingController phoneController = TextEditingController(
-    text: "05*********",
-  );
-  final TextEditingController emailController = TextEditingController(
-    text: "sudenazkartal55@gmail.com",
-  );
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   final FocusNode nameFocus = FocusNode();
   final FocusNode phoneFocus = FocusNode();
   final FocusNode emailFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('patients')
+              .doc(uid)
+              .get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        nameController.text = "${data['name']} ${data['surname']}";
+        phoneController.text = data['phone'] ?? '';
+        emailController.text = data['email'] ?? '';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Profil verileri alınamadı: $e')));
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   void enableEditing(FocusNode focusNode) {
     setState(() => isEditing = true);
@@ -56,20 +83,27 @@ class _PatientsProfileState extends State<PatientsProfile> {
           Positioned.fill(
             child: Image.asset('images/arka_plan.png', fit: BoxFit.cover),
           ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, kToolbarHeight + 32, 16, 16),
-            child: Column(
-              children: [
-                _buildEditableTile("Ad-Soyad", nameController, nameFocus),
-                _buildEditableTile(
-                  "Telefon Numarası",
-                  phoneController,
-                  phoneFocus,
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  16,
+                  kToolbarHeight + 32,
+                  16,
+                  16,
                 ),
-                _buildEditableTile("Email", emailController, emailFocus),
-              ],
-            ),
-          ),
+                child: Column(
+                  children: [
+                    _buildEditableTile("Ad-Soyad", nameController, nameFocus),
+                    _buildEditableTile(
+                      "Telefon Numarası",
+                      phoneController,
+                      phoneFocus,
+                    ),
+                    _buildEditableTile("Email", emailController, emailFocus),
+                  ],
+                ),
+              ),
         ],
       ),
     );

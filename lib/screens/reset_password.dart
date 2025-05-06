@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({Key? key}) : super(key: key);
@@ -27,6 +28,39 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     });
   }
 
+  Future<void> _updatePassword() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final oldPassword = _oldPasswordController.text.trim();
+    final newPassword = _newPasswordController.text.trim();
+
+    if (user == null || user.email == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Kullanıcı oturumu bulunamadı.")),
+      );
+      return;
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: oldPassword,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+      await user.updatePassword(newPassword);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Şifre başarıyla güncellendi.")),
+      );
+
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Hata oluştu: ${e.toString()}")));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +84,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             key: _formKey,
             child: Column(
               children: [
-                const SizedBox(height: 80), // Added padding for AppBar
+                const SizedBox(height: 80),
                 _buildPasswordField(
                   label: "Eski Şifre",
                   controller: _oldPasswordController,
@@ -75,14 +109,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Şifre güncellendi.")),
-                      );
+                      _updatePassword();
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white, // Yazı rengi
-                    backgroundColor: Color(0xFF305058), // Buton arka planı
+                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xFF305058),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 14,
@@ -128,6 +160,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         if (value == null || value.isEmpty) return 'Bu alan boş bırakılamaz';
         if (label.contains("Tekrar") && value != _newPasswordController.text) {
           return 'Şifreler eşleşmiyor';
+        }
+        if (label.contains("Yeni") && value.length < 6) {
+          return 'Yeni şifre en az 6 karakter olmalı';
         }
         return null;
       },

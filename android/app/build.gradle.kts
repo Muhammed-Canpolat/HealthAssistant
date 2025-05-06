@@ -1,14 +1,23 @@
+// android/app/build.gradle.kts
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    id("com.google.gms.google-services") // ✅ Firebase için gerekli
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.example.kronik_hasta_takip"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 34
+    ndkVersion = "27.0.12077973"
+
+    defaultConfig {
+        applicationId = "com.example.kronik_hasta_takip"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -16,15 +25,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
-    }
-
-    defaultConfig {
-        applicationId = "com.example.kronik_hasta_takip"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        jvmTarget = "11"
     }
 
     buildTypes {
@@ -38,5 +39,5 @@ flutter {
     source = "../.."
 }
 
-// 🔽🔽🔽 Bu satır mutlaka en sonda olmalı 🔽🔽🔽
+// ✅ Firebase'i etkinleştiren satır — En altta olmalı
 apply(plugin = "com.google.gms.google-services")
