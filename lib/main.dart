@@ -1,10 +1,8 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'screens/settings.dart' as general_settings;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // Screens
 import 'screens/login_email_screen.dart';
@@ -15,13 +13,14 @@ import 'screens/register_relative_screen.dart';
 import 'screens/forgot_password_screen.dart';
 import 'screens/forgot_password_verify_screen.dart';
 import 'screens/forgot_password_reset_screen.dart';
-//import 'screens/home_page.dart';
 import 'screens/emergency.dart';
 import 'screens/patients_home_page.dart';
 import 'screens/patients_settings.dart';
 import 'screens/patients_profile.dart';
 import 'screens/patients_security.dart';
 import 'screens/patients_help.dart';
+import 'screens/home_page.dart'; // Hasta ekranı
+import 'screens/settings.dart' as general_settings;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +50,7 @@ class KronikHastaTakipApp extends StatelessWidget {
         '/forgotPassword': (context) => const ForgotPasswordScreen(),
         '/forgotVerify': (context) => ForgotVerifyScreen(),
         '/resetPassword': (context) => const ForgotResetScreen(),
-        '/home': (context) => AltNavigasyon(),
+        '/home': (context) => const AltNavigasyon(),
         '/relativeHome': (context) => PatientHomePage(),
         '/patientsSettings': (context) => PatientsSettings(),
         '/patientsProfile': (context) => PatientsProfile(),
@@ -69,23 +68,21 @@ class RedirectAfterLogin extends StatelessWidget {
   Future<String?> getUserRole() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final patientsSnapshot =
+      final patientsDoc =
           await FirebaseFirestore.instance
               .collection('patients')
               .doc(user.uid)
               .get();
 
-      if (patientsSnapshot.exists) {
-        return 'patient';
-      }
+      if (patientsDoc.exists) return 'patient';
 
-      final relativesSnapshot =
+      final relativesDoc =
           await FirebaseFirestore.instance
               .collection('relatives')
               .doc(user.uid)
               .get();
 
-      return relativesSnapshot.data()?['role'];
+      if (relativesDoc.exists) return relativesDoc.data()?['role'];
     }
     return null;
   }
@@ -128,15 +125,17 @@ class RedirectAfterLogin extends StatelessWidget {
 }
 
 class AltNavigasyon extends StatefulWidget {
+  const AltNavigasyon({super.key});
+
   @override
-  _AltNavigasyonState createState() => _AltNavigasyonState();
+  State<AltNavigasyon> createState() => _AltNavigasyonState();
 }
 
 class _AltNavigasyonState extends State<AltNavigasyon> {
   int _seciliIndex = 0;
 
   final List<Widget> _sayfalar = [
-    PatientHomePage(),
+    const HomePage(), // Hasta Ana Sayfası (Datalar + chart)
     general_settings.Settings(),
   ];
 

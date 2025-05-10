@@ -1,14 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class ForgotResetScreen extends StatelessWidget {
+class ForgotResetScreen extends StatefulWidget {
   const ForgotResetScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmNewPasswordController =
-        TextEditingController();
+  State<ForgotResetScreen> createState() => _ForgotResetScreenState();
+}
 
+class _ForgotResetScreenState extends State<ForgotResetScreen> {
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
+
+  Future<void> _updatePassword() async {
+    final newPass = newPasswordController.text.trim();
+    final confirmPass = confirmPasswordController.text.trim();
+
+    if (newPass.isEmpty || confirmPass.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Lütfen tüm alanları doldurun")),
+      );
+      return;
+    }
+
+    if (newPass.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Şifre en az 6 karakter olmalı")),
+      );
+      return;
+    }
+
+    if (newPass != confirmPass) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Şifreler eşleşmiyor")));
+      return;
+    }
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.updatePassword(newPass);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Şifreniz başarıyla güncellendi")),
+        );
+        Navigator.pushNamedAndRemoveUntil(context, '/loginEmail', (_) => false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Giriş yapılmadan şifre değiştirilemez"),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Hata: ${e.toString()}")));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -31,7 +88,7 @@ class ForgotResetScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 60),
               const Text(
                 'Yeni Şifre Belirle',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -39,7 +96,7 @@ class ForgotResetScreen extends StatelessWidget {
               const SizedBox(height: 24),
               TextField(
                 controller: newPasswordController,
-                obscureText: true,
+                obscureText: _obscureNew,
                 decoration: InputDecoration(
                   labelText: 'Yeni Şifre',
                   filled: true,
@@ -48,12 +105,18 @@ class ForgotResetScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureNew ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () => setState(() => _obscureNew = !_obscureNew),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: confirmNewPasswordController,
-                obscureText: true,
+                controller: confirmPasswordController,
+                obscureText: _obscureConfirm,
                 decoration: InputDecoration(
                   labelText: 'Yeni Şifre (Tekrar)',
                   filled: true,
@@ -62,17 +125,19 @@ class ForgotResetScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed:
+                        () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    '/loginPhone',
-                    (route) => false,
-                  );
-                },
+                onPressed: _updatePassword,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFCDE7DA),
                   foregroundColor: Colors.black,

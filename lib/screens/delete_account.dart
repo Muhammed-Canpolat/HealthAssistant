@@ -1,7 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DeleteAccountPage extends StatelessWidget {
   const DeleteAccountPage({super.key});
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        await user.delete();
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Hesabınız silindi.")));
+
+        Navigator.pushNamedAndRemoveUntil(context, '/loginEmail', (_) => false);
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text("Kullanıcı bulunamadı.")));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Silme hatası: ${e.toString()}")));
+    }
+  }
 
   void _showDeleteDialog(BuildContext context) {
     showDialog(
@@ -15,7 +40,9 @@ class DeleteAccountPage extends StatelessWidget {
           ),
           actions: [
             TextButton(
-              style: TextButton.styleFrom(backgroundColor: Color(0xFF305058)),
+              style: TextButton.styleFrom(
+                backgroundColor: const Color(0xFF305058),
+              ),
               child: const Text(
                 "Vazgeç",
                 style: TextStyle(color: Colors.white, fontSize: 20),
@@ -24,20 +51,13 @@ class DeleteAccountPage extends StatelessWidget {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF305058),
+                backgroundColor: const Color(0xFF305058),
               ),
               child: const Text(
                 "Evet",
                 style: TextStyle(color: Colors.white, fontSize: 20),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                // Gerçek silme işlemi burada yapılabilir
-                print("Hesap silindi.");
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text("Hesap silindi.")));
-              },
+              onPressed: () => _deleteAccount(context),
             ),
           ],
         );
@@ -89,7 +109,7 @@ class DeleteAccountPage extends StatelessWidget {
                       style: TextStyle(fontSize: 18, color: Colors.white),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF305058),
+                      backgroundColor: const Color(0xFF305058),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 14,

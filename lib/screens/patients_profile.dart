@@ -27,13 +27,14 @@ class _PatientsProfileState extends State<PatientsProfile> {
 
   Future<void> fetchUserData() async {
     try {
-      final uid = FirebaseAuth.instance.currentUser!.uid;
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid == null) return;
+
       final doc =
           await FirebaseFirestore.instance
               .collection('patients')
               .doc(uid)
               .get();
-
       if (doc.exists) {
         final data = doc.data()!;
         nameController.text = "${data['name']} ${data['surname']}";
@@ -51,7 +52,7 @@ class _PatientsProfileState extends State<PatientsProfile> {
 
   void enableEditing(FocusNode focusNode) {
     setState(() => isEditing = true);
-    Future.delayed(Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       FocusScope.of(context).requestFocus(focusNode);
     });
   }
@@ -94,7 +95,7 @@ class _PatientsProfileState extends State<PatientsProfile> {
                 ),
                 child: Column(
                   children: [
-                    _buildEditableTile("Ad-Soyad", nameController, nameFocus),
+                    _buildEditableTile("Ad Soyad", nameController, nameFocus),
                     _buildEditableTile(
                       "Telefon Numarası",
                       phoneController,
@@ -120,7 +121,7 @@ class _PatientsProfileState extends State<PatientsProfile> {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 3)),
         ],
       ),
@@ -147,7 +148,6 @@ class _PatientsProfileState extends State<PatientsProfile> {
                   style: const TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
                   ),
                 ),
               ],

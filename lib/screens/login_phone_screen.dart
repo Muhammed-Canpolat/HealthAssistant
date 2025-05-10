@@ -1,22 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPhoneScreen extends StatelessWidget {
+class LoginPhoneScreen extends StatefulWidget {
   const LoginPhoneScreen({super.key});
+
+  @override
+  State<LoginPhoneScreen> createState() => _LoginPhoneScreenState();
+}
+
+class _LoginPhoneScreenState extends State<LoginPhoneScreen> {
+  final TextEditingController phoneController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  String verificationId = '';
+
+  Future<void> _verifyPhoneNumber() async {
+    final phoneNumber = phoneController.text.trim();
+
+    if (phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Telefon numarası boş olamaz")),
+      );
+      return;
+    }
+
+    try {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        timeout: const Duration(seconds: 60),
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          await _auth.signInWithCredential(credential);
+          Navigator.pushReplacementNamed(context, '/home');
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Doğrulama başarısız: ${e.message}")),
+          );
+        },
+        codeSent: (String verId, int? resendToken) {
+          setState(() {
+            verificationId = verId;
+          });
+          Navigator.pushNamed(context, '/loginSms', arguments: verificationId);
+        },
+        codeAutoRetrievalTimeout: (String verId) {
+          verificationId = verId;
+        },
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Hata: ${e.toString()}")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Arka plan görseli
           Positioned.fill(
             child: Image.asset(
               'images/ana_sayfa_arkaplan.png',
               fit: BoxFit.cover,
             ),
           ),
-
-          // Sayfa içeriği
           SafeArea(
             child: SingleChildScrollView(
               child: Padding(
@@ -35,7 +83,6 @@ class LoginPhoneScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 14),
                     const SizedBox(height: 350),
                     Container(
                       padding: const EdgeInsets.all(24),
@@ -49,67 +96,8 @@ class LoginPhoneScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/loginEmail',
-                                      );
-                                    },
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: Colors.transparent,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                          topLeft: Radius.circular(24),
-                                          bottomLeft: Radius.circular(24),
-                                        ),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'E-MAİL',
-                                      style: TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: TextButton(
-                                    onPressed: () {},
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: Colors.black87,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.only(
-                                          topRight: Radius.circular(24),
-                                          bottomRight: Radius.circular(24),
-                                        ),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      'Telefon No',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 28),
                           TextField(
+                            controller: phoneController,
                             keyboardType: TextInputType.phone,
                             decoration: InputDecoration(
                               filled: true,
@@ -128,9 +116,7 @@ class LoginPhoneScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 28),
                           GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/loginSms');
-                            },
+                            onTap: _verifyPhoneNumber,
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.symmetric(vertical: 10),

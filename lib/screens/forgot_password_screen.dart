@@ -50,13 +50,23 @@ class ForgotPasswordScreen extends StatelessWidget {
               const SizedBox(height: 18),
               ElevatedButton(
                 onPressed: () {
+                  final phone = phoneController.text.trim();
+                  if (phone.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Telefon numarası giriniz")),
+                    );
+                    return;
+                  }
+
+                  // Normalde burada Firebase ile SMS gönderimi yapılır.
+                  // Bu demo yapıda doğrudan doğrulama ekranına yönlendiriyoruz.
                   Navigator.pushNamed(context, '/forgotVerify');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 176, 196, 187),
                   foregroundColor: Colors.black,
                 ),
-                child: Text("SMS Gönder", style: TextStyle(fontSize: 22)),
+                child: const Text("SMS Gönder", style: TextStyle(fontSize: 22)),
               ),
             ],
           ),

@@ -56,11 +56,7 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
               const SizedBox(height: 10),
               const Text(
                 'Kronik Hasta Takip',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               ClipRRect(
@@ -72,257 +68,84 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {},
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.black87,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Text(
-                          'Hasta',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.pushNamed(
-                              context,
-                              '/registerRelative',
-                            ),
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: const Text(
-                          'Hasta Yakını',
-                          style: TextStyle(color: Colors.black87),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildUserTypeButtons(context),
               const SizedBox(height: 20),
-              buildInputField(label: 'Ad', controller: nameController),
-              buildInputField(label: 'Soyad', controller: surnameController),
-              buildInputField(label: 'E-posta', controller: emailController),
-              buildInputField(
-                label: 'Telefon Numarası',
-                controller: phoneController,
-              ),
-              buildInputField(
-                label: 'Şifre',
-                controller: passwordController,
-                obscureText: true,
-              ),
-              buildInputField(
-                label: 'Şifre Tekrarı',
-                controller: confirmPasswordController,
-                obscureText: true,
-              ),
-              const SizedBox(height: 16),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Hastalıklarınızı Seçiniz',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              MultiSelectDialogField(
-                items: diseaseList.map((e) => MultiSelectItem(e, e)).toList(),
-                title: const Text("Hastalıklar"),
-                buttonText: const Text("Hastalık Seç"),
-                onConfirm:
-                    (values) => setState(
-                      () => selectedDiseases = values.cast<String>(),
-                    ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildInputField(
-                      label: 'Kg',
-                      controller: weightController,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: buildInputField(
-                      label: 'cm',
-                      controller: heightController,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: selectedBloodType,
-                      hint: const Text("Kan Grubu"),
-                      items:
-                          ["A+", "A-", "B+", "B-", "AB+", "AB-", "0+", "0-"]
-                              .map(
-                                (type) => DropdownMenuItem(
-                                  value: type,
-                                  child: Text(type),
-                                ),
-                              )
-                              .toList(),
-                      onChanged:
-                          (value) => setState(() => selectedBloodType = value),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: selectedGender,
-                      hint: const Text("Cinsiyet"),
-                      items:
-                          ["Kadın", "Erkek"]
-                              .map(
-                                (gender) => DropdownMenuItem(
-                                  value: gender,
-                                  child: Text(gender),
-                                ),
-                              )
-                              .toList(),
-                      onChanged:
-                          (value) => setState(() => selectedGender = value),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              _buildTextFields(),
+              _buildDiseaseSelection(),
+              _buildPhysicalInputs(),
+              _buildDropdowns(),
               const SizedBox(height: 32),
               GestureDetector(
-                onTap: () async {
-                  final name = nameController.text.trim();
-                  final surname = surnameController.text.trim();
-                  final email = emailController.text.trim();
-                  final phone = phoneController.text.trim();
-                  final password = passwordController.text.trim();
-                  final confirmPassword = confirmPasswordController.text.trim();
-                  final weight = weightController.text.trim();
-                  final height = heightController.text.trim();
-
-                  if (password != confirmPassword) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Şifreler uyuşmuyor!")),
-                    );
-                    return;
-                  }
-
-                  if (password.length < 6) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Şifre en az 6 karakter olmalı."),
-                      ),
-                    );
-                    return;
-                  }
-
-                  try {
-                    final userCredential = await FirebaseAuth.instance
-                        .createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-                    final uid = userCredential.user!.uid;
-
-                    String generatePatientCode() {
-                      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-                      final rand = Random();
-                      return 'HT' +
-                          List.generate(
-                            4,
-                            (index) => chars[rand.nextInt(chars.length)],
-                          ).join();
-                    }
-
-                    final patientCode = generatePatientCode();
-
-                    await FirebaseFirestore.instance
-                        .collection('patients')
-                        .doc(uid)
-                        .set({
-                          'uid': uid,
-                          'name': name,
-                          'surname': surname,
-                          'email': email,
-                          'phone': phone,
-                          'weight': weight,
-                          'height': height,
-                          'gender': selectedGender,
-                          'bloodType': selectedBloodType,
-                          'diseases': selectedDiseases,
-                          'patientCode': patientCode,
-                          'role': 'patient', // 🔐 Giriş ekranı için şart
-                          'createdAt': Timestamp.now(),
-                        });
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Kayıt başarılı!")),
-                    );
-                    Navigator.pushReplacementNamed(context, '/loginEmail');
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          "Kayıt sırasında hata oluştu: ${e.toString()}",
-                        ),
-                      ),
-                    );
-                  }
-                },
+                onTap: _registerPatient,
                 child: Image.asset('images/frame_60.png', width: 120),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildUserTypeButtons(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextButton(
+              onPressed: () {},
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.black87,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text('Hasta', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+          Expanded(
+            child: TextButton(
+              onPressed:
+                  () => Navigator.pushNamed(context, '/registerRelative'),
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: const Text(
+                'Hasta Yakını',
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextFields() {
+    return Column(
+      children: [
+        buildInputField(label: 'Ad', controller: nameController),
+        buildInputField(label: 'Soyad', controller: surnameController),
+        buildInputField(label: 'E-posta', controller: emailController),
+        buildInputField(label: 'Telefon Numarası', controller: phoneController),
+        buildInputField(
+          label: 'Şifre',
+          controller: passwordController,
+          obscureText: true,
+        ),
+        buildInputField(
+          label: 'Şifre Tekrarı',
+          controller: confirmPasswordController,
+          obscureText: true,
+        ),
+      ],
     );
   }
 
@@ -347,5 +170,180 @@ class _RegisterPatientScreenState extends State<RegisterPatientScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildDiseaseSelection() {
+    return Column(
+      children: [
+        const Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            'Hastalıklarınızı Seçiniz',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(height: 8),
+        MultiSelectDialogField<String>(
+          items: diseaseList.map((e) => MultiSelectItem<String>(e, e)).toList(),
+          title: const Text("Hastalıklar"),
+          buttonText: const Text("Hastalık Seç"),
+          onConfirm: (values) {
+            setState(() {
+              selectedDiseases = List<String>.from(values);
+            });
+          },
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhysicalInputs() {
+    return Row(
+      children: [
+        Expanded(
+          child: buildInputField(label: 'Kg', controller: weightController),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: buildInputField(label: 'cm', controller: heightController),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdowns() {
+    return Row(
+      children: [
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: selectedBloodType,
+            hint: const Text("Kan Grubu"),
+            items:
+                ["A+", "A-", "B+", "B-", "AB+", "AB-", "0+", "0-"]
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
+                    )
+                    .toList(),
+            onChanged: (value) => setState(() => selectedBloodType = value),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: selectedGender,
+            hint: const Text("Cinsiyet"),
+            items:
+                ["Kadın", "Erkek"]
+                    .map(
+                      (gender) =>
+                          DropdownMenuItem(value: gender, child: Text(gender)),
+                    )
+                    .toList(),
+            onChanged: (value) => setState(() => selectedGender = value),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _registerPatient() async {
+    final name = nameController.text.trim();
+    final surname = surnameController.text.trim();
+    final email = emailController.text.trim();
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+    final weight = weightController.text.trim();
+    final height = heightController.text.trim();
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Şifreler uyuşmuyor!")));
+      return;
+    }
+
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Şifre en az 6 karakter olmalı.")),
+      );
+      return;
+    }
+
+    try {
+      final userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final uid = userCredential.user!.uid;
+
+      String generatePatientCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        final rand = Random();
+        return 'HT' +
+            List.generate(
+              4,
+              (index) => chars[rand.nextInt(chars.length)],
+            ).join();
+      }
+
+      String patientCode;
+      bool codeExists;
+
+      do {
+        patientCode = generatePatientCode();
+        final existing =
+            await FirebaseFirestore.instance
+                .collection('patients')
+                .where('patientCode', isEqualTo: patientCode)
+                .get();
+        codeExists = existing.docs.isNotEmpty;
+      } while (codeExists);
+
+      await FirebaseFirestore.instance.collection('patients').doc(uid).set({
+        'uid': uid,
+        'name': name,
+        'surname': surname,
+        'email': email,
+        'phone': phone,
+        'weight': weight,
+        'height': height,
+        'gender': selectedGender,
+        'bloodType': selectedBloodType,
+        'diseases': selectedDiseases,
+        'patientCode': patientCode,
+        'role': 'patient',
+        'createdAt': Timestamp.now(),
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Kayıt başarılı!")));
+      Navigator.pushReplacementNamed(context, '/loginEmail');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Kayıt sırasında hata oluştu: ${e.toString()}")),
+      );
+    }
   }
 }

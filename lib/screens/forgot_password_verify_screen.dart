@@ -45,13 +45,22 @@ class ForgotVerifyScreen extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
+                  final code = smsCodeController.text.trim();
+                  if (code.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Kod giriniz")),
+                    );
+                    return;
+                  }
+
+                  // Demo mantıkta doğrulama başarılı kabul edilir
                   Navigator.pushNamed(context, '/resetPassword');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 176, 196, 187),
                   foregroundColor: Colors.black,
                 ),
-                child: Text("Devam Et", style: TextStyle(fontSize: 22)),
+                child: const Text("Devam Et", style: TextStyle(fontSize: 22)),
               ),
               const SizedBox(height: 24),
             ],

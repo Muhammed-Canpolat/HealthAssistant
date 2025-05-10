@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class PatientRelativePage extends StatefulWidget {
@@ -8,32 +10,28 @@ class PatientRelativePage extends StatefulWidget {
 }
 
 class _PatientRelativePageState extends State<PatientRelativePage> {
-  List<Map<String, String>> relatives = [
-    {'name': 'Dilara Karaca', 'phone': '05*********'},
-    {'name': 'Muhammed Canpolat', 'phone': '05*********'},
-  ];
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
-  bool accessPermission = false;
-  bool locationPermission = false;
-
-  void _addRelative() {
+  Future<void> _addRelative(BuildContext context) async {
     String newName = '';
     String newPhone = '';
 
-    showDialog(
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Yeni Hasta Yakını Ekle'),
+          title: const Text('Yeni Hasta Yakını Ekle'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'İsim'),
+                decoration: const InputDecoration(labelText: 'İsim'),
                 onChanged: (value) => newName = value,
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Telefon Numarası'),
+                decoration: const InputDecoration(
+                  labelText: 'Telefon Numarası',
+                ),
                 keyboardType: TextInputType.phone,
                 onChanged: (value) => newPhone = value,
               ),
@@ -41,16 +39,22 @@ class _PatientRelativePageState extends State<PatientRelativePage> {
           ),
           actions: [
             TextButton(
-              child: Text('İptal'),
+              child: const Text('İptal'),
               onPressed: () => Navigator.pop(context),
             ),
             ElevatedButton(
-              child: Text('Ekle'),
-              onPressed: () {
+              child: const Text('Ekle'),
+              onPressed: () async {
                 if (newName.trim().isNotEmpty && newPhone.trim().isNotEmpty) {
-                  setState(() {
-                    relatives.add({'name': newName, 'phone': newPhone});
-                  });
+                  await FirebaseFirestore.instance
+                      .collection('patients')
+                      .doc(currentUserId)
+                      .collection('relatives')
+                      .add({
+                        'name': newName,
+                        'phone': newPhone,
+                        'createdAt': Timestamp.now(),
+                      });
                 }
                 Navigator.pop(context);
               },
@@ -61,10 +65,13 @@ class _PatientRelativePageState extends State<PatientRelativePage> {
     );
   }
 
-  void _removeRelative(int index) {
-    setState(() {
-      relatives.removeAt(index);
-    });
+  Future<void> _deleteRelative(String docId) async {
+    await FirebaseFirestore.instance
+        .collection('patients')
+        .doc(currentUserId)
+        .collection('relatives')
+        .doc(docId)
+        .delete();
   }
 
   @override
@@ -83,7 +90,7 @@ class _PatientRelativePageState extends State<PatientRelativePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.add, color: Colors.black),
-            onPressed: _addRelative,
+            onPressed: () => _addRelative(context),
           ),
         ],
       ),
@@ -92,98 +99,52 @@ class _PatientRelativePageState extends State<PatientRelativePage> {
           Positioned.fill(
             child: Image.asset('images/arka_plan.png', fit: BoxFit.cover),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 3),
+          StreamBuilder<QuerySnapshot>(
+            stream:
+                FirebaseFirestore.instance
+                    .collection('patients')
+                    .doc(currentUserId)
+                    .collection('relatives')
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text("Henüz kayıtlı yakınız yok."));
+              }
+
+              final relatives = snapshot.data!.docs;
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: relatives.length,
+                itemBuilder: (context, index) {
+                  final data = relatives[index];
+                  final docId = data.id;
+                  final name = data['name'];
+                  final phone = data['phone'];
+
+                  return Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text(
+                        name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                    ],
-                  ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: relatives.length,
-                    separatorBuilder:
-                        (context, index) =>
-                            Divider(height: 1, color: Colors.grey[300]),
-                    itemBuilder: (context, index) {
-                      return Dismissible(
-                        key: UniqueKey(),
-                        direction: DismissDirection.endToStart,
-                        background: Container(
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          color: Colors.red,
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        onDismissed: (direction) => _removeRelative(index),
-                        child: ListTile(
-                          title: Text(
-                            relatives[index]['name'] ?? '',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(relatives[index]['phone'] ?? ''),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Divider(thickness: 1, color: Colors.grey[400]),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 3),
+                      subtitle: Text(phone),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteRelative(docId),
                       ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        title: const Text(
-                          'Kayıtlı yakınlarıma erişim izni ver.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        value: accessPermission,
-                        onChanged:
-                            (value) => setState(() => accessPermission = value),
-                      ),
-                      SwitchListTile(
-                        title: const Text(
-                          'Kayıtlı yakınlarıma konum erişim izni ver.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        value: locationPermission,
-                        onChanged:
-                            (value) =>
-                                setState(() => locationPermission = value),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
         ],
       ),
